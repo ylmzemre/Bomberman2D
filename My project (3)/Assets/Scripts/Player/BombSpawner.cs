@@ -27,16 +27,22 @@ namespace Bomberman2D.Player
         {
             if (currentBombsCount < maxBombs)
             {
-                // In Bomberman, bombs typically snap to the center of the grid tile
-                Vector2 placePos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-                
-                // Check if a bomb already exists at this location
+                // Grid'deki koordinatını hesapla (Ölçekler 0.5 olduğu için 0.5'in katlarına yuvarla)
+                // Grid cell size 1, ama scale 0.5 olduğu için grid koordinatları 0.5 adımlarla ilerler
+                // Fakat biz basitçe Tilemap Grid'ine uydurmak için Mathf.Round(pos * 2f) / 2f yapabiliriz
+                // Grid ayarları değişirse burayı güncellemek gerekebilir. Şu anki gridde 0.5'in katları uygundur.
+                Vector2 placePos = new Vector2(
+                    Mathf.Round(transform.position.x * 2f) / 2f,
+                    Mathf.Round(transform.position.y * 2f) / 2f
+                );
+
+                // O noktada Duvar, Kutu veya Bomba var mı kontrol et
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(placePos, 0.1f);
-                foreach (var col in colliders)
+                foreach (var hit in colliders)
                 {
-                    if (col.CompareTag("Bomb"))
+                    if (hit.CompareTag("Bomb") || hit.CompareTag("Wall") || hit.CompareTag("Breakable"))
                     {
-                        return; // Already a bomb here
+                        return; // O alanda bir engel varsa bomba koyma!
                     }
                 }
 

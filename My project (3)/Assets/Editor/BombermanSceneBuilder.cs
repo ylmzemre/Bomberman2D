@@ -57,12 +57,12 @@ public class BombermanSceneBuilder
         if (mainCam != null)
         {
             mainCam.orthographic = true;
-            mainCam.orthographicSize = 4f; // Daha küçük harita için kamerayı yakınlaştır
-            mainCam.transform.position = new Vector3(2.5f, 2.5f, -10f);
+            mainCam.orthographicSize = 6f; // Daha büyük (21x11) harita için kamerayı uzaklaştır
+            mainCam.transform.position = new Vector3(5f, 2.5f, -10f); // 21x11 Grid (Scale 0.5) merkezi (X: 5, Y: 2.5)
             mainCam.backgroundColor = new Color(0.15f, 0.4f, 0.15f);
         }
 
-        // 4. Prefab'leri Üret (Eğer yoklarsa veya güncelleyeceksek)
+        // 4. Prefab'leri Üret
         GameObject explosionPrefab = CreateExplosionPrefab();
         GameObject bombPrefab = CreateBombPrefab(explosionPrefab);
         GameObject playerPrefab = CreatePlayerPrefab(bombPrefab);
@@ -72,8 +72,8 @@ public class BombermanSceneBuilder
         // 5. Tilemap ile Kırılamaz Duvarları Çiz (Grid -> Tilemap)
         GameObject gridObj = new GameObject("Grid");
         Grid grid = gridObj.AddComponent<Grid>();
-        grid.cellSize = new Vector3(1, 1, 0); // Hücreler 1x1
-        gridObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); // Tüm Grid'i 0.5 ölçeğine küçült (Duvarlar 0.5 olacak)
+        grid.cellSize = new Vector3(1, 1, 0); 
+        gridObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
 
         GameObject tilemapObj = new GameObject("WallTilemap");
         tilemapObj.transform.SetParent(gridObj.transform);
@@ -92,12 +92,12 @@ public class BombermanSceneBuilder
             AssetDatabase.CreateAsset(wallTile, "Assets/Tiles/WallTile.asset");
         }
 
-        // Dış Çerçeveyi Çiz (11x11 Grid'de, dış sınırlar)
-        for (int x = 0; x < 11; x++)
+        // Dikdörtgen 21x11 Dış Çerçeve Çiz (Grid cell koordinatları: X 0-20, Y 0-10)
+        for (int x = 0; x < 21; x++)
         {
             for (int y = 0; y < 11; y++)
             {
-                bool isBorder = (x == 0 || x == 10 || y == 0 || y == 10);
+                bool isBorder = (x == 0 || x == 20 || y == 0 || y == 10);
                 if (isBorder)
                 {
                     tilemap.SetTile(new Vector3Int(x, y, 0), wallTile);
@@ -109,21 +109,21 @@ public class BombermanSceneBuilder
         GameObject demoParent = new GameObject("Demo_Items (Buradan cogaltin)");
         
         GameObject pObj = PrefabUtility.InstantiatePrefab(playerPrefab) as GameObject;
-        pObj.transform.position = new Vector3(0.5f, 0.5f, 0f); // Gerçek dünyada Grid'in (1,1) koordinatı 0.5 ölçekliyse 0.5, 0.5'tir.
+        pObj.transform.position = new Vector3(0.5f, 0.5f, 0f); // X=1, Y=1 (Grid x=1, y=1 -> *0.5)
         pObj.transform.SetParent(demoParent.transform);
 
         GameObject eObj = PrefabUtility.InstantiatePrefab(enemyPrefab) as GameObject;
-        eObj.transform.position = new Vector3(4.5f, 4.5f, 0f); // Grid (9,9)
+        eObj.transform.position = new Vector3(9.5f, 4.5f, 0f); // X=19, Y=9
         eObj.transform.SetParent(demoParent.transform);
 
         GameObject bObj = PrefabUtility.InstantiatePrefab(boxPrefab) as GameObject;
-        bObj.transform.position = new Vector3(1.0f, 1.0f, 0f); // Grid (2,2)
+        bObj.transform.position = new Vector3(1.0f, 1.0f, 0f); // X=2, Y=2
         bObj.transform.SetParent(demoParent.transform);
 
         // 7. UI Kurulumu
         BuildUI();
 
-        Debug.Log("Sahne, Prefab'ler ve Tilemap başarıyla oluşturuldu!");
+        Debug.Log("Sahne (Dikdörtgen 21x11), Prefab'ler ve Tilemap başarıyla oluşturuldu!");
     }
 
     private static void AddTag(string tag)
@@ -150,6 +150,10 @@ public class BombermanSceneBuilder
         expObj.tag = "Explosion";
         BoxCollider2D expCol = expObj.AddComponent<BoxCollider2D>();
         expCol.isTrigger = true;
+        // Kutu çarpışmasını algılayabilmesi için Explosion'a Kinematic Rigidbody ekliyoruz
+        Rigidbody2D expRb = expObj.AddComponent<Rigidbody2D>();
+        expRb.bodyType = RigidbodyType2D.Kinematic;
+        
         expObj.AddComponent<Explosion>();
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(expObj, path);
         Object.DestroyImmediate(expObj);
@@ -161,11 +165,14 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Bomb.prefab";
         GameObject bombObj = new GameObject("Bomb");
         bombObj.tag = "Bomb";
-        bombObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); // Bomba da kutu/duvar boyutunda
+        bombObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
         SpriteRenderer bSr = bombObj.AddComponent<SpriteRenderer>();
         bSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Bomb.png");
         bSr.sortingOrder = 2;
         CircleCollider2D bCol = bombObj.AddComponent<CircleCollider2D>();
+        // Collider boyutunu sprite bounds'a göre ayarla
+        bCol.radius = bSr.sprite.bounds.extents.x;
+        
         Bomb bombComp = bombObj.AddComponent<Bomb>();
         bombComp.explosionPrefab = explosionPrefab;
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(bombObj, path);
@@ -178,7 +185,7 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Player.prefab";
         GameObject player = new GameObject("Player");
         player.tag = "Player";
-        player.transform.localScale = new Vector3(0.3f, 0.3f, 1f); // İstenen ölçek
+        player.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
         
         SpriteRenderer sr = player.AddComponent<SpriteRenderer>();
         sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Player.png");
@@ -189,7 +196,8 @@ public class BombermanSceneBuilder
         rb.freezeRotation = true;
 
         BoxCollider2D col = player.AddComponent<BoxCollider2D>();
-        col.size = new Vector2(0.9f, 0.9f); // Sprite'a tam oturması için
+        // Sprite sınırlarına (bounds) tam oturacak şekilde ayarla, içine girme hatası oluşmasın
+        col.size = sr.sprite.bounds.size; 
 
         player.AddComponent<PlayerController>();
         BombSpawner spawner = player.AddComponent<BombSpawner>();
@@ -205,7 +213,7 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Enemy.prefab";
         GameObject enemy = new GameObject("Enemy");
         enemy.tag = "Enemy";
-        enemy.transform.localScale = new Vector3(0.4f, 0.4f, 1f); // İstenen ölçek
+        enemy.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
 
         SpriteRenderer sr = enemy.AddComponent<SpriteRenderer>();
         sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Enemy.png");
@@ -216,7 +224,7 @@ public class BombermanSceneBuilder
         rb.freezeRotation = true;
 
         BoxCollider2D col = enemy.AddComponent<BoxCollider2D>();
-        col.size = new Vector2(0.9f, 0.9f);
+        col.size = sr.sprite.bounds.size;
 
         enemy.AddComponent<EnemyAI>();
 
@@ -230,14 +238,15 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Box.prefab";
         GameObject box = new GameObject("Box");
         box.tag = "Breakable";
-        box.transform.localScale = new Vector3(0.4f, 0.4f, 1f); // İstenen ölçek
+        box.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
 
         SpriteRenderer sr = box.AddComponent<SpriteRenderer>();
         sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/BreakableBlock.png");
         sr.sortingOrder = 2;
 
         BoxCollider2D col = box.AddComponent<BoxCollider2D>();
-        col.size = new Vector2(1f, 1f);
+        col.size = sr.sprite.bounds.size;
+        
         box.AddComponent<BreakableBlock>();
 
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(box, path);
