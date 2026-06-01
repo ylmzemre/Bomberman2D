@@ -336,10 +336,20 @@ public class BombermanSceneBuilder
         TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(path);
         if (importer != null)
         {
-            if (importer.textureType != TextureImporterType.Sprite || importer.filterMode != FilterMode.Point)
+            // Orijinal dosya boyutunu oku
+            byte[] fileData = System.IO.File.ReadAllBytes(path);
+            Texture2D tex = new Texture2D(2, 2);
+            tex.LoadImage(fileData);
+            
+            // Resmi 1x1 birim dünya koordinatına sığdırmak için PPU'yu en büyük boyuta eşitle
+            float targetPPU = Mathf.Max(tex.width, tex.height);
+            // Minimum PPU değeri 100 olsun ki çok küçük UI görselleri bozulmasın
+            if (targetPPU < 100) targetPPU = 100;
+
+            if (importer.textureType != TextureImporterType.Sprite || importer.filterMode != FilterMode.Point || Mathf.Abs(importer.spritePixelsPerUnit - targetPPU) > 0.1f)
             {
                 importer.textureType = TextureImporterType.Sprite;
-                importer.spritePixelsPerUnit = 256; 
+                importer.spritePixelsPerUnit = targetPPU; 
                 importer.filterMode = FilterMode.Point;
                 importer.textureCompression = TextureImporterCompression.Uncompressed;
                 importer.SaveAndReimport();
