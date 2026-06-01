@@ -64,7 +64,35 @@ public class BombermanSceneBuilder
             col.size = new Vector2(0.8f, 0.8f);
 
             player.AddComponent<PlayerController>();
-            player.AddComponent<BombSpawner>();
+            BombSpawner spawner = player.AddComponent<BombSpawner>();
+            
+            // Otomatik Bomb ve Explosion Prefab Üretimi
+            GameObject explosionPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Explosion.prefab");
+            if (explosionPrefab == null)
+            {
+                GameObject expObj = new GameObject("ExplosionPrefab");
+                BoxCollider2D expCol = expObj.AddComponent<BoxCollider2D>();
+                expCol.isTrigger = true;
+                expObj.AddComponent<Explosion>();
+                if (!System.IO.Directory.Exists("Assets/Prefabs")) System.IO.Directory.CreateDirectory("Assets/Prefabs");
+                explosionPrefab = PrefabUtility.SaveAsPrefabAsset(expObj, "Assets/Prefabs/Explosion.prefab");
+                Object.DestroyImmediate(expObj);
+            }
+
+            GameObject bombPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Bomb.prefab");
+            if (bombPrefab == null)
+            {
+                GameObject bombObj = new GameObject("BombPrefab");
+                SpriteRenderer bSr = bombObj.AddComponent<SpriteRenderer>();
+                bSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Bomb.png");
+                CircleCollider2D bCol = bombObj.AddComponent<CircleCollider2D>();
+                Bomb bombComp = bombObj.AddComponent<Bomb>();
+                bombComp.explosionPrefab = explosionPrefab;
+                bombPrefab = PrefabUtility.SaveAsPrefabAsset(bombObj, "Assets/Prefabs/Bomb.prefab");
+                Object.DestroyImmediate(bombObj);
+            }
+
+            spawner.bombPrefab = bombPrefab;
         }
 
         // 5. Düşman Oluştur
@@ -178,7 +206,8 @@ public class BombermanSceneBuilder
             {
                 GameObject eventSystem = new GameObject("EventSystem");
                 eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                eventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                // Unity'nin yeni Input System'i için StandaloneInputModule yerine InputSystemUIInputModule kullanıyoruz.
+                eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
             }
         }
 
