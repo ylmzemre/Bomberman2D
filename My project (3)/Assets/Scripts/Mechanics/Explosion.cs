@@ -18,8 +18,11 @@ namespace Bomberman2D.Mechanics
             // Handle player death
             if (other.CompareTag("Player"))
             {
-                Debug.Log("Player hit by explosion! Game Over.");
-                // TODO: Call GameManager.GameOver()
+                Debug.Log("Player hit by explosion!");
+                if (Bomberman2D.Core.GameManager.Instance != null)
+                {
+                    Bomberman2D.Core.GameManager.Instance.PlayerDied();
+                }
                 Destroy(other.gameObject);
             }
             
@@ -27,6 +30,11 @@ namespace Bomberman2D.Mechanics
             else if (other.CompareTag("Enemy"))
             {
                 Debug.Log("Enemy hit by explosion!");
+                // Add score via GameManager
+                if (Bomberman2D.Core.GameManager.Instance != null)
+                {
+                    Bomberman2D.Core.GameManager.Instance.AddScore(100);
+                }
                 Destroy(other.gameObject);
             }
             

@@ -29,7 +29,7 @@ namespace Bomberman2D.Enemy
 
         private void FixedUpdate()
         {
-            rb.velocity = moveDirection * speed;
+            rb.linearVelocity = moveDirection * speed;
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -45,9 +45,12 @@ namespace Bomberman2D.Enemy
             // Damage player
             else if (collision.gameObject.CompareTag("Player"))
             {
-                Debug.Log("Player touched enemy! Game Over.");
+                Debug.Log("Player touched enemy!");
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.PlayerDied();
+                }
                 Destroy(collision.gameObject);
-                // GameManager.GameOver();
             }
         }
 

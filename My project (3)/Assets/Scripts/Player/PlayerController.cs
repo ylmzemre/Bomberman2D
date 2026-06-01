@@ -40,7 +40,7 @@ namespace Bomberman2D.Player
         private void FixedUpdate()
         {
             // Apply movement
-            rb.velocity = movement.normalized * currentSpeed;
+            rb.linearVelocity = movement.normalized * currentSpeed;
         }
 
         // Method to increase speed when getting a power-up
