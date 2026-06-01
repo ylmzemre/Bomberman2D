@@ -14,6 +14,17 @@ namespace Bomberman2D.Mechanics
         private BombSpawner spawner;
         private int range;
         private bool exploded = false;
+        private Collider2D bombCollider;
+
+        private void Start()
+        {
+            bombCollider = GetComponent<Collider2D>();
+            if (bombCollider != null)
+            {
+                // Bomba ilk koyulduğunda geçirgen (Trigger) olsun ki oyuncu sıkışmasın
+                bombCollider.isTrigger = true;
+            }
+        }
 
         public void Initialize(BombSpawner spawner, int range)
         {
@@ -44,7 +55,7 @@ namespace Bomberman2D.Mechanics
 
             // Hide the bomb sprite/collider immediately
             GetComponent<SpriteRenderer>().enabled = false;
-            GetComponent<Collider2D>().enabled = false;
+            if (bombCollider != null) bombCollider.enabled = false;
 
             // Destroy this bomb object shortly after
             Destroy(gameObject, 0.5f);
@@ -92,6 +103,15 @@ namespace Bomberman2D.Mechanics
             {
                 CancelInvoke("Explode");
                 Explode();
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            // Oyuncu bombanın üzerinden çekildiğinde bombayı katı hale getir
+            if (other.CompareTag("Player") && bombCollider != null)
+            {
+                bombCollider.isTrigger = false;
             }
         }
     }
