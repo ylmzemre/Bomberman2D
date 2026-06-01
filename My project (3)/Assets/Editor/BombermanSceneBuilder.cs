@@ -171,7 +171,8 @@ public class BombermanSceneBuilder
         bSr.sortingOrder = 2;
         CircleCollider2D bCol = bombObj.AddComponent<CircleCollider2D>();
         // Collider boyutunu sprite bounds'a göre ayarla
-        bCol.radius = bSr.sprite.bounds.extents.x;
+        if (bSr.sprite != null) bCol.radius = bSr.sprite.bounds.extents.x;
+        else bCol.radius = 0.5f;
         
         Bomb bombComp = bombObj.AddComponent<Bomb>();
         bombComp.explosionPrefab = explosionPrefab;
@@ -197,7 +198,8 @@ public class BombermanSceneBuilder
 
         BoxCollider2D col = player.AddComponent<BoxCollider2D>();
         // Sprite sınırlarına (bounds) tam oturacak şekilde ayarla, içine girme hatası oluşmasın
-        col.size = sr.sprite.bounds.size; 
+        if (sr.sprite != null) col.size = sr.sprite.bounds.size; 
+        else col.size = new Vector2(1f, 1f);
 
         player.AddComponent<PlayerController>();
         BombSpawner spawner = player.AddComponent<BombSpawner>();
@@ -224,7 +226,8 @@ public class BombermanSceneBuilder
         rb.freezeRotation = true;
 
         BoxCollider2D col = enemy.AddComponent<BoxCollider2D>();
-        col.size = sr.sprite.bounds.size;
+        if (sr.sprite != null) col.size = sr.sprite.bounds.size;
+        else col.size = new Vector2(1f, 1f);
 
         enemy.AddComponent<EnemyAI>();
 
@@ -245,7 +248,8 @@ public class BombermanSceneBuilder
         sr.sortingOrder = 2;
 
         BoxCollider2D col = box.AddComponent<BoxCollider2D>();
-        col.size = sr.sprite.bounds.size;
+        if (sr.sprite != null) col.size = sr.sprite.bounds.size;
+        else col.size = new Vector2(1f, 1f);
         
         box.AddComponent<BreakableBlock>();
 
