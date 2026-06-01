@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
+using Bomberman2D.Mechanics;
 
 namespace Bomberman2D.Player
 {
