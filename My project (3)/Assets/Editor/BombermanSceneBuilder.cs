@@ -14,7 +14,15 @@ public class BombermanSceneBuilder
     [MenuItem("Bomberman/1. Otomatik Sahneyi Kur")]
     public static void BuildScene()
     {
-        Debug.Log("Sahne kurulumu başlatılıyor...");
+        Debug.Log("Sahne temizleniyor ve baştan kuruluyor...");
+
+        // Önceki bozuk kalıntıları temizle
+        DestroyIfExists("Player");
+        DestroyIfExists("Enemy");
+        DestroyIfExists("Canvas");
+        DestroyIfExists("EventSystem");
+        DestroyIfExists("GameManager");
+        DestroyIfExists("Environment");
 
         // 1. Görselleri Pixel Art Sprite'a Çevir
         SetupSprite("Assets/Sprites/Player.png");
@@ -27,12 +35,8 @@ public class BombermanSceneBuilder
         SetupSprite("Assets/Sprites/UI/Heart.png");
 
         // 2. GameManager Oluştur
-        GameManager gm = Object.FindAnyObjectByType<GameManager>();
-        if (gm == null)
-        {
-            GameObject gmObj = new GameObject("GameManager");
-            gm = gmObj.AddComponent<GameManager>();
-        }
+        GameObject gmObj = new GameObject("GameManager");
+        gmObj.AddComponent<GameManager>();
 
         // 3. Kamera Ayarları
         Camera mainCam = Camera.main;
@@ -45,173 +49,152 @@ public class BombermanSceneBuilder
         }
 
         // 4. Oyuncu Oluştur
-        GameObject player = GameObject.Find("Player");
-        if (player == null)
+        GameObject player = new GameObject("Player");
+        player.transform.position = new Vector3(1, 1, 0);
+        player.tag = "Player";
+        
+        SpriteRenderer pSr = player.AddComponent<SpriteRenderer>();
+        pSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Player.png");
+        pSr.sortingOrder = 10;
+
+        Rigidbody2D pRb = player.AddComponent<Rigidbody2D>();
+        pRb.gravityScale = 0;
+        pRb.freezeRotation = true;
+
+        BoxCollider2D pCol = player.AddComponent<BoxCollider2D>();
+        pCol.size = new Vector2(0.8f, 0.8f);
+
+        player.AddComponent<PlayerController>();
+        BombSpawner spawner = player.AddComponent<BombSpawner>();
+        
+        // Otomatik Bomb ve Explosion Prefab Üretimi
+        GameObject explosionPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Explosion.prefab");
+        if (explosionPrefab == null)
         {
-            player = new GameObject("Player");
-            player.transform.position = new Vector3(1, 1, 0);
-            player.tag = "Player";
-            
-            SpriteRenderer sr = player.AddComponent<SpriteRenderer>();
-            sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Player.png");
-            sr.sortingOrder = 10;
-
-            Rigidbody2D rb = player.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0;
-            rb.freezeRotation = true;
-
-            BoxCollider2D col = player.AddComponent<BoxCollider2D>();
-            col.size = new Vector2(0.8f, 0.8f);
-
-            player.AddComponent<PlayerController>();
-            BombSpawner spawner = player.AddComponent<BombSpawner>();
-            
-            // Otomatik Bomb ve Explosion Prefab Üretimi
-            GameObject explosionPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Explosion.prefab");
-            if (explosionPrefab == null)
-            {
-                GameObject expObj = new GameObject("ExplosionPrefab");
-                BoxCollider2D expCol = expObj.AddComponent<BoxCollider2D>();
-                expCol.isTrigger = true;
-                expObj.AddComponent<Explosion>();
-                if (!System.IO.Directory.Exists("Assets/Prefabs")) System.IO.Directory.CreateDirectory("Assets/Prefabs");
-                explosionPrefab = PrefabUtility.SaveAsPrefabAsset(expObj, "Assets/Prefabs/Explosion.prefab");
-                Object.DestroyImmediate(expObj);
-            }
-
-            GameObject bombPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Bomb.prefab");
-            if (bombPrefab == null)
-            {
-                GameObject bombObj = new GameObject("BombPrefab");
-                SpriteRenderer bSr = bombObj.AddComponent<SpriteRenderer>();
-                bSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Bomb.png");
-                CircleCollider2D bCol = bombObj.AddComponent<CircleCollider2D>();
-                Bomb bombComp = bombObj.AddComponent<Bomb>();
-                bombComp.explosionPrefab = explosionPrefab;
-                bombPrefab = PrefabUtility.SaveAsPrefabAsset(bombObj, "Assets/Prefabs/Bomb.prefab");
-                Object.DestroyImmediate(bombObj);
-            }
-
-            spawner.bombPrefab = bombPrefab;
+            GameObject expObj = new GameObject("ExplosionPrefab");
+            BoxCollider2D expCol = expObj.AddComponent<BoxCollider2D>();
+            expCol.isTrigger = true;
+            expObj.AddComponent<Explosion>();
+            if (!System.IO.Directory.Exists("Assets/Prefabs")) System.IO.Directory.CreateDirectory("Assets/Prefabs");
+            explosionPrefab = PrefabUtility.SaveAsPrefabAsset(expObj, "Assets/Prefabs/Explosion.prefab");
+            Object.DestroyImmediate(expObj);
         }
+
+        GameObject bombPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Bomb.prefab");
+        if (bombPrefab == null)
+        {
+            GameObject bombObj = new GameObject("BombPrefab");
+            SpriteRenderer bSr = bombObj.AddComponent<SpriteRenderer>();
+            bSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Bomb.png");
+            CircleCollider2D bCol = bombObj.AddComponent<CircleCollider2D>();
+            Bomb bombComp = bombObj.AddComponent<Bomb>();
+            bombComp.explosionPrefab = explosionPrefab;
+            bombPrefab = PrefabUtility.SaveAsPrefabAsset(bombObj, "Assets/Prefabs/Bomb.prefab");
+            Object.DestroyImmediate(bombObj);
+        }
+
+        spawner.bombPrefab = bombPrefab;
 
         // 5. Düşman Oluştur
-        if (GameObject.Find("Enemy") == null)
-        {
-            GameObject enemy = new GameObject("Enemy");
-            enemy.transform.position = new Vector3(9, 9, 0);
-            enemy.tag = "Enemy";
+        GameObject enemy = new GameObject("Enemy");
+        enemy.transform.position = new Vector3(9, 9, 0);
+        enemy.tag = "Enemy";
 
-            SpriteRenderer sr = enemy.AddComponent<SpriteRenderer>();
-            sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Enemy.png");
-            sr.sortingOrder = 9;
+        SpriteRenderer eSr = enemy.AddComponent<SpriteRenderer>();
+        eSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Enemy.png");
+        eSr.sortingOrder = 9;
 
-            Rigidbody2D rb = enemy.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0;
-            rb.freezeRotation = true;
+        Rigidbody2D eRb = enemy.AddComponent<Rigidbody2D>();
+        eRb.gravityScale = 0;
+        eRb.freezeRotation = true;
 
-            BoxCollider2D col = enemy.AddComponent<BoxCollider2D>();
-            col.size = new Vector2(0.8f, 0.8f);
+        BoxCollider2D eCol = enemy.AddComponent<BoxCollider2D>();
+        eCol.size = new Vector2(0.8f, 0.8f);
 
-            enemy.AddComponent<EnemyAI>();
-        }
+        enemy.AddComponent<EnemyAI>();
 
         // 6. Basit Harita (11x11 Grid)
-        GameObject env = GameObject.Find("Environment");
-        if (env == null)
+        GameObject env = new GameObject("Environment");
+        Sprite wallSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Wall.png");
+        Sprite boxSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/BreakableBlock.png");
+
+        for (int x = 0; x < 11; x++)
         {
-            env = new GameObject("Environment");
-            
-            Sprite wallSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Wall.png");
-            Sprite boxSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/BreakableBlock.png");
-
-            for (int x = 0; x < 11; x++)
+            for (int y = 0; y < 11; y++)
             {
-                for (int y = 0; y < 11; y++)
-                {
-                    bool isBorder = (x == 0 || x == 10 || y == 0 || y == 10);
-                    bool isInnerWall = (x % 2 == 0 && y % 2 == 0);
-                    bool isPlayerSafeZone = (x <= 2 && y <= 2);
+                bool isBorder = (x == 0 || x == 10 || y == 0 || y == 10);
+                bool isInnerWall = (x % 2 == 0 && y % 2 == 0);
+                bool isPlayerSafeZone = (x <= 2 && y <= 2);
 
-                    if (isBorder || isInnerWall)
-                    {
-                        CreateWall(x, y, env.transform, wallSprite, "Wall");
-                    }
-                    else if (!isPlayerSafeZone && Random.value > 0.3f)
-                    {
-                        CreateBreakable(x, y, env.transform, boxSprite);
-                    }
+                if (isBorder || isInnerWall)
+                {
+                    CreateWall(x, y, env.transform, wallSprite, "Wall");
+                }
+                else if (!isPlayerSafeZone && Random.value > 0.3f)
+                {
+                    CreateBreakable(x, y, env.transform, boxSprite);
                 }
             }
         }
 
         // 7. UI Canvas Oluştur
-        if (GameObject.Find("Canvas") == null)
-        {
-            GameObject canvasObj = new GameObject("Canvas");
-            Canvas canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasObj.AddComponent<GraphicRaycaster>();
+        GameObject canvasObj = new GameObject("Canvas");
+        Canvas canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        canvasObj.AddComponent<GraphicRaycaster>();
 
-            // UIManager
-            UIManager uiManager = canvasObj.AddComponent<UIManager>();
+        UIManager uiManager = canvasObj.AddComponent<UIManager>();
 
-            // Top Panel
-            GameObject panelObj = new GameObject("TopPanel");
-            panelObj.transform.SetParent(canvasObj.transform, false);
-            Image panelImg = panelObj.AddComponent<Image>();
-            panelImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Panel.png");
-            panelImg.color = new Color(0, 0, 0, 0.5f); // Yarı saydam
-            RectTransform panelRect = panelObj.GetComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0, 1);
-            panelRect.anchorMax = new Vector2(1, 1);
-            panelRect.pivot = new Vector2(0.5f, 1);
-            panelRect.anchoredPosition = Vector2.zero;
-            panelRect.sizeDelta = new Vector2(0, 60); // 60px height
+        GameObject panelObj = new GameObject("TopPanel");
+        panelObj.transform.SetParent(canvasObj.transform, false);
+        Image panelImg = panelObj.AddComponent<Image>();
+        panelImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Panel.png");
+        panelImg.color = new Color(0, 0, 0, 0.5f);
+        RectTransform panelRect = panelObj.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0, 1);
+        panelRect.anchorMax = new Vector2(1, 1);
+        panelRect.pivot = new Vector2(0.5f, 1);
+        panelRect.anchoredPosition = Vector2.zero;
+        panelRect.sizeDelta = new Vector2(0, 60);
 
-            // Score Text
-            uiManager.scoreText = CreateText("ScoreText", panelObj.transform, new Vector2(20, -30), "Score: 0");
-            uiManager.timeText = CreateText("TimeText", panelObj.transform, new Vector2(250, -30), "Time: 05:00");
-            uiManager.bombCountText = CreateText("BombText", panelObj.transform, new Vector2(500, -30), "Bombs: 1/1");
-            uiManager.enemyCountText = CreateText("EnemyText", panelObj.transform, new Vector2(750, -30), "Enemies: 0");
+        uiManager.scoreText = CreateText("ScoreText", panelObj.transform, new Vector2(20, -30), "Score: 0");
+        uiManager.timeText = CreateText("TimeText", panelObj.transform, new Vector2(250, -30), "Time: 05:00");
+        uiManager.bombCountText = CreateText("BombText", panelObj.transform, new Vector2(500, -30), "Bombs: 1/1");
+        uiManager.enemyCountText = CreateText("EnemyText", panelObj.transform, new Vector2(750, -30), "Enemies: 0");
 
-            // Lives Container
-            GameObject livesObj = new GameObject("LivesContainer");
-            livesObj.transform.SetParent(panelObj.transform, false);
-            RectTransform livesRect = livesObj.AddComponent<RectTransform>();
-            livesRect.anchorMin = new Vector2(1, 0.5f);
-            livesRect.anchorMax = new Vector2(1, 0.5f);
-            livesRect.pivot = new Vector2(1, 0.5f);
-            livesRect.anchoredPosition = new Vector2(-20, 0);
-            livesRect.sizeDelta = new Vector2(150, 40);
+        GameObject livesObj = new GameObject("LivesContainer");
+        livesObj.transform.SetParent(panelObj.transform, false);
+        RectTransform livesRect = livesObj.AddComponent<RectTransform>();
+        livesRect.anchorMin = new Vector2(1, 0.5f);
+        livesRect.anchorMax = new Vector2(1, 0.5f);
+        livesRect.pivot = new Vector2(1, 0.5f);
+        livesRect.anchoredPosition = new Vector2(-20, 0);
+        livesRect.sizeDelta = new Vector2(150, 40);
 
-            // Heart Prefab (Created dynamically, usually should be a prefab but we make it here to attach)
-            GameObject heartPrefabObj = new GameObject("HeartPrefab");
-            Image heartImg = heartPrefabObj.AddComponent<Image>();
-            heartImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Heart.png");
-            heartPrefabObj.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
-            
-            // To make it an actual prefab we should save it
-            string heartPrefabPath = "Assets/Prefabs/HeartIcon.prefab";
-            if (!System.IO.Directory.Exists("Assets/Prefabs")) System.IO.Directory.CreateDirectory("Assets/Prefabs");
-            GameObject savedHeartPrefab = PrefabUtility.SaveAsPrefabAsset(heartPrefabObj, heartPrefabPath);
-            Object.DestroyImmediate(heartPrefabObj); // Clean up from scene
+        GameObject heartPrefabObj = new GameObject("HeartPrefab");
+        Image heartImg = heartPrefabObj.AddComponent<Image>();
+        heartImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Heart.png");
+        heartPrefabObj.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
+        string heartPrefabPath = "Assets/Prefabs/HeartIcon.prefab";
+        GameObject savedHeartPrefab = PrefabUtility.SaveAsPrefabAsset(heartPrefabObj, heartPrefabPath);
+        Object.DestroyImmediate(heartPrefabObj);
 
-            uiManager.livesContainer = livesObj.transform;
-            uiManager.heartIconPrefab = savedHeartPrefab;
+        uiManager.livesContainer = livesObj.transform;
+        uiManager.heartIconPrefab = savedHeartPrefab;
 
-            // Event System
-            if (Object.FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
-            {
-                GameObject eventSystem = new GameObject("EventSystem");
-                eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                // Unity'nin yeni Input System'i için StandaloneInputModule yerine InputSystemUIInputModule kullanıyoruz.
-                eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
-            }
-        }
+        // 8. Event System (InputSystemUIInputModule ile)
+        GameObject eventSystem = new GameObject("EventSystem");
+        eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
-        Debug.Log("Sahne ve UI başarıyla kuruldu!");
+        Debug.Log("Sahne tamamen sıfırlandı ve hatasız şekilde kuruldu!");
+    }
+
+    private static void DestroyIfExists(string name)
+    {
+        GameObject go = GameObject.Find(name);
+        if (go != null) Object.DestroyImmediate(go);
     }
 
     private static TextMeshProUGUI CreateText(string name, Transform parent, Vector2 position, string defaultText)
