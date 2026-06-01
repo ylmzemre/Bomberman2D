@@ -88,7 +88,7 @@ public class BombermanSceneBuilder
         if (wallTile == null)
         {
             wallTile = ScriptableObject.CreateInstance<Tile>();
-            wallTile.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Wall.png");
+            wallTile.sprite = LoadSprite("Assets/Sprites/Wall.png");
             AssetDatabase.CreateAsset(wallTile, "Assets/Tiles/WallTile.asset");
         }
 
@@ -167,7 +167,7 @@ public class BombermanSceneBuilder
         bombObj.tag = "Bomb";
         bombObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
         SpriteRenderer bSr = bombObj.AddComponent<SpriteRenderer>();
-        bSr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Bomb.png");
+        bSr.sprite = LoadSprite("Assets/Sprites/Bomb.png");
         bSr.sortingOrder = 2;
         CircleCollider2D bCol = bombObj.AddComponent<CircleCollider2D>();
         // Collider boyutunu sprite bounds'a göre ayarla
@@ -189,7 +189,7 @@ public class BombermanSceneBuilder
         player.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
         
         SpriteRenderer sr = player.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Player.png");
+        sr.sprite = LoadSprite("Assets/Sprites/Player.png");
         sr.sortingOrder = 10;
 
         Rigidbody2D rb = player.AddComponent<Rigidbody2D>();
@@ -218,7 +218,7 @@ public class BombermanSceneBuilder
         enemy.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
 
         SpriteRenderer sr = enemy.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Enemy.png");
+        sr.sprite = LoadSprite("Assets/Sprites/Enemy.png");
         sr.sortingOrder = 9;
 
         Rigidbody2D rb = enemy.AddComponent<Rigidbody2D>();
@@ -244,7 +244,7 @@ public class BombermanSceneBuilder
         box.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
 
         SpriteRenderer sr = box.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/BreakableBlock.png");
+        sr.sprite = LoadSprite("Assets/Sprites/BreakableBlock.png");
         sr.sortingOrder = 2;
 
         BoxCollider2D col = box.AddComponent<BoxCollider2D>();
@@ -271,7 +271,7 @@ public class BombermanSceneBuilder
         GameObject panelObj = new GameObject("TopPanel");
         panelObj.transform.SetParent(canvasObj.transform, false);
         Image panelImg = panelObj.AddComponent<Image>();
-        panelImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Panel.png");
+        panelImg.sprite = LoadSprite("Assets/Sprites/UI/Panel.png");
         panelImg.color = new Color(0, 0, 0, 0.5f);
         RectTransform panelRect = panelObj.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0, 1);
@@ -296,7 +296,7 @@ public class BombermanSceneBuilder
 
         GameObject heartPrefabObj = new GameObject("HeartPrefab");
         Image heartImg = heartPrefabObj.AddComponent<Image>();
-        heartImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Heart.png");
+        heartImg.sprite = LoadSprite("Assets/Sprites/UI/Heart.png");
         heartPrefabObj.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
         string heartPrefabPath = "Assets/Prefabs/HeartIcon.prefab";
         GameObject savedHeartPrefab = PrefabUtility.SaveAsPrefabAsset(heartPrefabObj, heartPrefabPath);
@@ -353,11 +353,26 @@ public class BombermanSceneBuilder
             if (importer.textureType != TextureImporterType.Sprite || importer.filterMode != FilterMode.Point || Mathf.Abs(importer.spritePixelsPerUnit - targetPPU) > 0.1f)
             {
                 importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
                 importer.spritePixelsPerUnit = targetPPU; 
                 importer.filterMode = FilterMode.Point;
                 importer.textureCompression = TextureImporterCompression.Uncompressed;
                 importer.SaveAndReimport();
             }
         }
+    }
+
+    private static Sprite LoadSprite(string path)
+    {
+        Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (sprite == null)
+        {
+            Object[] allAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+            foreach (Object obj in allAssets)
+            {
+                if (obj is Sprite s) return s;
+            }
+        }
+        return sprite;
     }
 }
