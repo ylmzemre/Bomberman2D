@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 namespace Bomberman2D.Player
 {
@@ -15,7 +16,7 @@ namespace Bomberman2D.Player
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 TryPlaceBomb();
             }

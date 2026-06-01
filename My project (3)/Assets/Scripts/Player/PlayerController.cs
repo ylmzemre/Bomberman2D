@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Bomberman2D.Player
 {
@@ -25,12 +26,19 @@ namespace Bomberman2D.Player
 
         private void Update()
         {
-            // Get raw input to avoid floaty movement (classic bomberman movement is usually snappy)
-            movement.x = Input.GetAxisRaw("Horizontal");
-            movement.y = Input.GetAxisRaw("Vertical");
+            // Yeni Input System (Keyboard) kullanımı
+            movement = Vector2.zero;
+            
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) movement.y = 1;
+                else if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) movement.y = -1;
+                
+                if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) movement.x = 1;
+                else if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) movement.x = -1;
+            }
 
-            // Prevent diagonal movement to keep it strictly grid-like, 
-            // or allow it but normalize it. Classic bomberman usually locks you to one axis at a time.
+            // Prevent diagonal movement to keep it strictly grid-like
             if (Mathf.Abs(movement.x) > 0.1f)
             {
                 movement.y = 0;
