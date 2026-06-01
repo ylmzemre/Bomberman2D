@@ -44,8 +44,11 @@ namespace Bomberman2D.Player
                     currentBombsCount++;
                     GameObject newBomb = Instantiate(bombPrefab, placePos, Quaternion.identity);
                     
-                    // You would normally pass reference to this spawner so the bomb can decrement the count when it explodes
-                    // newBomb.GetComponent<Bomb>().Initialize(this, explosionRange);
+                    Bomb bombComponent = newBomb.GetComponent<Bomb>();
+                    if (bombComponent != null)
+                    {
+                        bombComponent.Initialize(this, explosionRange);
+                    }
                 }
             }
         }
