@@ -57,8 +57,8 @@ public class BombermanSceneBuilder
         if (mainCam != null)
         {
             mainCam.orthographic = true;
-            mainCam.orthographicSize = 6f; // Daha büyük (21x11) harita için kamerayı uzaklaştır
-            mainCam.transform.position = new Vector3(5f, 2.5f, -10f); // 21x11 Grid (Scale 0.5) merkezi (X: 5, Y: 2.5)
+            mainCam.orthographicSize = 6.5f; // Scale 1 olduğu için harita yüksekliği 11, yarısı 5.5 (Biraz boşlukla 6.5)
+            mainCam.transform.position = new Vector3(10f, 5.5f, -10f); // 21x11 Grid merkezi
             mainCam.backgroundColor = new Color(0.15f, 0.4f, 0.15f);
         }
 
@@ -73,7 +73,7 @@ public class BombermanSceneBuilder
         GameObject gridObj = new GameObject("Grid");
         Grid grid = gridObj.AddComponent<Grid>();
         grid.cellSize = new Vector3(1, 1, 0); 
-        gridObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
+        gridObj.transform.localScale = Vector3.one; 
 
         GameObject tilemapObj = new GameObject("WallTilemap");
         tilemapObj.transform.SetParent(gridObj.transform);
@@ -83,14 +83,14 @@ public class BombermanSceneBuilder
         tilemapRenderer.sortingOrder = 1;
         tilemapObj.AddComponent<TilemapCollider2D>();
 
-        // Duvar Tile Asseti oluştur
         Tile wallTile = AssetDatabase.LoadAssetAtPath<Tile>("Assets/Tiles/WallTile.asset");
         if (wallTile == null)
         {
             wallTile = ScriptableObject.CreateInstance<Tile>();
-            wallTile.sprite = LoadSprite("Assets/Sprites/Wall.png");
             AssetDatabase.CreateAsset(wallTile, "Assets/Tiles/WallTile.asset");
         }
+        wallTile.sprite = LoadSprite("Assets/Sprites/Wall.png");
+        EditorUtility.SetDirty(wallTile);
 
         // Dikdörtgen 21x11 Dış Çerçeve Çiz (Grid cell koordinatları: X 0-20, Y 0-10)
         for (int x = 0; x < 21; x++)
@@ -105,19 +105,18 @@ public class BombermanSceneBuilder
             }
         }
 
-        // 6. Kullanıcı İçin Örnek Objeleri Sahneye Bırak
         GameObject demoParent = new GameObject("Demo_Items (Buradan cogaltin)");
         
         GameObject pObj = PrefabUtility.InstantiatePrefab(playerPrefab) as GameObject;
-        pObj.transform.position = new Vector3(0.5f, 0.5f, 0f); // X=1, Y=1 (Grid x=1, y=1 -> *0.5)
+        pObj.transform.position = new Vector3(1f, 1f, 0f); 
         pObj.transform.SetParent(demoParent.transform);
 
         GameObject eObj = PrefabUtility.InstantiatePrefab(enemyPrefab) as GameObject;
-        eObj.transform.position = new Vector3(9.5f, 4.5f, 0f); // X=19, Y=9
+        eObj.transform.position = new Vector3(19f, 9f, 0f); 
         eObj.transform.SetParent(demoParent.transform);
 
         GameObject bObj = PrefabUtility.InstantiatePrefab(boxPrefab) as GameObject;
-        bObj.transform.position = new Vector3(1.0f, 1.0f, 0f); // X=2, Y=2
+        bObj.transform.position = new Vector3(2f, 2f, 0f); 
         bObj.transform.SetParent(demoParent.transform);
 
         // 7. UI Kurulumu
@@ -165,7 +164,7 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Bomb.prefab";
         GameObject bombObj = new GameObject("Bomb");
         bombObj.tag = "Bomb";
-        bombObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
+        bombObj.transform.localScale = Vector3.one; 
         SpriteRenderer bSr = bombObj.AddComponent<SpriteRenderer>();
         bSr.sprite = LoadSprite("Assets/Sprites/Bomb.png");
         bSr.sortingOrder = 2;
@@ -183,7 +182,7 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Player.prefab";
         GameObject player = new GameObject("Player");
         player.tag = "Player";
-        player.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
+        player.transform.localScale = Vector3.one; 
         
         SpriteRenderer sr = player.AddComponent<SpriteRenderer>();
         sr.sprite = LoadSprite("Assets/Sprites/Player.png");
@@ -209,7 +208,7 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Enemy.prefab";
         GameObject enemy = new GameObject("Enemy");
         enemy.tag = "Enemy";
-        enemy.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
+        enemy.transform.localScale = Vector3.one; 
 
         SpriteRenderer sr = enemy.AddComponent<SpriteRenderer>();
         sr.sprite = LoadSprite("Assets/Sprites/Enemy.png");
@@ -233,7 +232,7 @@ public class BombermanSceneBuilder
         string path = "Assets/Prefabs/Box.prefab";
         GameObject box = new GameObject("Box");
         box.tag = "Breakable";
-        box.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
+        box.transform.localScale = Vector3.one; 
 
         SpriteRenderer sr = box.AddComponent<SpriteRenderer>();
         sr.sprite = LoadSprite("Assets/Sprites/BreakableBlock.png");
@@ -298,6 +297,43 @@ public class BombermanSceneBuilder
         GameObject eventSystem = new GameObject("EventSystem");
         eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
         eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+
+        // Ana Menü Paneli
+        GameObject mainMenuObj = new GameObject("MainMenuPanel");
+        mainMenuObj.transform.SetParent(canvasObj.transform, false);
+        Image mainImg = mainMenuObj.AddComponent<Image>();
+        mainImg.color = new Color(0.1f, 0.1f, 0.2f, 1f); // Koyu arka plan
+        RectTransform mainRect = mainMenuObj.GetComponent<RectTransform>();
+        mainRect.anchorMin = Vector2.zero;
+        mainRect.anchorMax = Vector2.one;
+        mainRect.offsetMin = Vector2.zero;
+        mainRect.offsetMax = Vector2.zero;
+
+        // Oyunun başında TopPanel kapalı, MainMenu açık olacak
+        panelObj.SetActive(false); 
+        Time.timeScale = 0f; // Oyun başlamadan önce zamanı durdur
+
+        // MainMenu scriptini ekle
+        MainMenu menuScript = mainMenuObj.AddComponent<MainMenu>();
+        menuScript.topPanel = panelObj;
+
+        // Play Butonu
+        GameObject playBtnObj = new GameObject("PlayButton");
+        playBtnObj.transform.SetParent(mainMenuObj.transform, false);
+        Image btnImg = playBtnObj.AddComponent<Image>();
+        btnImg.sprite = LoadSprite("Assets/Sprites/UI/Button.png");
+        Button playBtn = playBtnObj.AddComponent<Button>();
+        RectTransform btnRect = playBtnObj.GetComponent<RectTransform>();
+        btnRect.sizeDelta = new Vector2(300, 100);
+        btnRect.anchoredPosition = new Vector2(0, 0);
+
+        // Play yazısı
+        TextMeshProUGUI playTxt = CreateText("Text", playBtnObj.transform, Vector2.zero, "OYUNU OYNA");
+        playTxt.alignment = TextAlignmentOptions.Center;
+        playTxt.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 100);
+
+        // Tıklama olayını bağla
+        playBtn.onClick.AddListener(menuScript.PlayGame);
     }
 
     private static TextMeshProUGUI CreateText(string name, Transform parent, Vector2 position, string defaultText)

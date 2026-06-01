@@ -27,13 +27,10 @@ namespace Bomberman2D.Player
         {
             if (currentBombsCount < maxBombs)
             {
-                // Grid'deki koordinatını hesapla (Ölçekler 0.5 olduğu için 0.5'in katlarına yuvarla)
-                // Grid cell size 1, ama scale 0.5 olduğu için grid koordinatları 0.5 adımlarla ilerler
-                // Fakat biz basitçe Tilemap Grid'ine uydurmak için Mathf.Round(pos * 2f) / 2f yapabiliriz
-                // Grid ayarları değişirse burayı güncellemek gerekebilir. Şu anki gridde 0.5'in katları uygundur.
+                // Grid'deki koordinatını hesapla (Ölçekler 1 olduğu için tam sayılara yuvarla)
                 Vector2 placePos = new Vector2(
-                    Mathf.Round(transform.position.x * 2f) / 2f,
-                    Mathf.Round(transform.position.y * 2f) / 2f
+                    Mathf.Round(transform.position.x),
+                    Mathf.Round(transform.position.y)
                 );
 
                 // O noktada Duvar, Kutu veya Bomba var mı kontrol et
