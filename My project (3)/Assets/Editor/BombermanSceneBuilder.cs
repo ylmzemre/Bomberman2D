@@ -311,7 +311,6 @@ public class BombermanSceneBuilder
 
         // Oyunun başında TopPanel kapalı, MainMenu açık olacak
         panelObj.SetActive(false); 
-        Time.timeScale = 0f; // Oyun başlamadan önce zamanı durdur
 
         // MainMenu scriptini ekle
         MainMenu menuScript = mainMenuObj.AddComponent<MainMenu>();
@@ -326,14 +325,9 @@ public class BombermanSceneBuilder
         RectTransform btnRect = playBtnObj.GetComponent<RectTransform>();
         btnRect.sizeDelta = new Vector2(300, 100);
         btnRect.anchoredPosition = new Vector2(0, 0);
-
-        // Play yazısı
-        TextMeshProUGUI playTxt = CreateText("Text", playBtnObj.transform, Vector2.zero, "OYUNU OYNA");
-        playTxt.alignment = TextAlignmentOptions.Center;
-        playTxt.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 100);
-
-        // Tıklama olayını bağla
-        playBtn.onClick.AddListener(menuScript.PlayGame);
+        
+        // Butonu scripte bağla
+        menuScript.playButton = playBtn;
     }
 
     private static TextMeshProUGUI CreateText(string name, Transform parent, Vector2 position, string defaultText)
