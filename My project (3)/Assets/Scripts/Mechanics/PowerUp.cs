@@ -27,7 +27,7 @@ namespace Bomberman2D.Mechanics
                 }
                 else if (type == PowerUpType.FireRange && spawner != null)
                 {
-                    spawner.bombRange++;
+                    spawner.explosionRange++;
                 }
 
                 if (AudioManager.Instance != null)
