@@ -45,6 +45,9 @@ public class BombermanSceneBuilder
         SetupSprite("Assets/Sprites/Bomb.png");
         SetupSprite("Assets/Sprites/Wall.png");
         SetupSprite("Assets/Sprites/BreakableBlock.png");
+        SetupSprite("Assets/Sprites/Powerup_Bomb.png");
+        SetupSprite("Assets/Sprites/Powerup_Fire.png");
+        SetupSprite("Assets/Sprites/Powerup_Skate.png");
         SetupSprite("Assets/Sprites/UI/Button.png");
         SetupSprite("Assets/Sprites/UI/Panel.png");
         SetupSprite("Assets/Sprites/UI/Heart.png");
@@ -81,6 +84,7 @@ public class BombermanSceneBuilder
         GameObject enemyPrefab = CreateEnemyPrefab();
         GameObject[] powerUpPrefabs = CreatePowerUpPrefabs();
         GameObject boxPrefab = CreateBoxPrefab(powerUpPrefabs);
+        GameObject wallPrefab = CreateWallPrefab();
 
         // 5. Tilemap ile Kırılamaz Duvarları Çiz (Grid -> Tilemap)
         GameObject gridObj = new GameObject("Grid");
@@ -294,7 +298,7 @@ public class BombermanSceneBuilder
         {
             GameObject pObj = new GameObject("PowerUp_" + types[i]);
             pObj.tag = "Breakable"; // Patlama bunu yok edebilsin diye
-            pObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); // Boyut küçültme
+            pObj.transform.localScale = Vector3.one; // Boyut kutu ile ayni (1x1) olsun
             SpriteRenderer sr = pObj.AddComponent<SpriteRenderer>();
             sr.sprite = LoadSprite("Assets/Sprites/Powerup_" + types[i] + ".png");
             sr.sortingOrder = 1;
@@ -329,6 +333,24 @@ public class BombermanSceneBuilder
 
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(box, path);
         Object.DestroyImmediate(box);
+        return prefab;
+    }
+
+    private static GameObject CreateWallPrefab()
+    {
+        string path = "Assets/Prefabs/Wall.prefab";
+        GameObject wall = new GameObject("Wall");
+        wall.tag = "Wall";
+        wall.transform.localScale = Vector3.one; 
+
+        SpriteRenderer sr = wall.AddComponent<SpriteRenderer>();
+        sr.sprite = LoadSprite("Assets/Sprites/Wall.png");
+        sr.sortingOrder = 2;
+
+        wall.AddComponent<BoxCollider2D>();
+
+        GameObject prefab = PrefabUtility.SaveAsPrefabAsset(wall, path);
+        Object.DestroyImmediate(wall);
         return prefab;
     }
 
