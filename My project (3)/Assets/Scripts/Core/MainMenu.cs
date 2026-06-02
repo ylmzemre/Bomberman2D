@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Bomberman2D.Core;
 
 namespace Bomberman2D.UI
 {
