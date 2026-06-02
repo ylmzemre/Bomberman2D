@@ -440,4 +440,42 @@ public class BombermanSceneBuilder
         }
         return sprite;
     }
+
+    private static Sprite[] LoadAllSprites(string path)
+    {
+        Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
+        System.Collections.Generic.List<Sprite> sprites = new System.Collections.Generic.List<Sprite>();
+        foreach (Object asset in assets)
+        {
+            if (asset is Sprite s)
+            {
+                sprites.Add(s);
+            }
+        }
+        
+        // İsme göre (örneğin PlayerSheet_0, PlayerSheet_1) sayısal olarak sırala
+        sprites.Sort((a, b) => {
+            int numA = ExtractNumber(a.name);
+            int numB = ExtractNumber(b.name);
+            return numA.CompareTo(numB);
+        });
+        
+        return sprites.ToArray();
+    }
+    
+    private static int ExtractNumber(string name)
+    {
+        string[] parts = name.Split('_');
+        if (parts.Length > 1 && int.TryParse(parts[parts.Length - 1], out int result))
+            return result;
+        return 0;
+    }
+
+    private static Sprite[] GetSpriteRange(Sprite[] sprites, int start, int length)
+    {
+        if (start + length > sprites.Length) return new Sprite[0];
+        Sprite[] result = new Sprite[length];
+        System.Array.Copy(sprites, start, result, 0, length);
+        return result;
+    }
 }
