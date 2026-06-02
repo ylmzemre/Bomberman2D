@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3598211820980993825}
   - component: {fileID: 8207338948273952442}
   - component: {fileID: 7858826490686497950}
-  - component: {fileID: 7925189324579209443}
+  - component: {fileID: 6639814293848897077}
   - component: {fileID: 2981705900413832337}
   m_Layer: 0
   m_Name: Enemy
@@ -151,8 +151,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!60 &7925189324579209443
-PolygonCollider2D:
+--- !u!58 &6639814293848897077
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -185,23 +185,8 @@ PolygonCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.41, y: 2.56}
-    newSize: {x: 3.41, y: 2.56}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -1.7049999, y: 1.28}
-      - {x: -1.7049999, y: -1.28}
-      - {x: 1.7049999, y: -1.28}
-      - {x: 1.7049999, y: 1.28}
-  m_UseDelaunayMesh: 1
+  m_Offset: {x: 0, y: -0.1}
+  m_Radius: 0.4
 --- !u!114 &2981705900413832337
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -207,8 +207,8 @@ public class BombermanSceneBuilder
             int cols = playerSprites.Length / 4;
             anim.downSprites = GetSpriteRange(playerSprites, 0, cols);
             anim.upSprites = GetSpriteRange(playerSprites, cols, cols);
-            anim.leftSprites = GetSpriteRange(playerSprites, cols * 2, cols);
-            anim.rightSprites = GetSpriteRange(playerSprites, cols * 3, cols);
+            anim.rightSprites = GetSpriteRange(playerSprites, cols * 2, cols);
+            anim.leftSprites = GetSpriteRange(playerSprites, cols * 3, cols);
         }
         else
         {
