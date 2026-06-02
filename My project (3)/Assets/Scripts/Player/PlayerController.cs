@@ -11,11 +11,13 @@ namespace Bomberman2D.Player
         public float currentSpeed;
 
         private Rigidbody2D rb;
+        private Mechanics.SpriteAnimator animator;
         private Vector2 movement;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Mechanics.SpriteAnimator>();
             // Gravity is not needed in a top-down game
             rb.gravityScale = 0f;
             // Freeze rotation to prevent physics from spinning the character
@@ -49,6 +51,11 @@ namespace Bomberman2D.Player
         {
             // Apply movement
             rb.linearVelocity = movement.normalized * currentSpeed;
+
+            if (animator != null)
+            {
+                animator.SetDirection(movement);
+            }
         }
 
         // Method to increase speed when getting a power-up

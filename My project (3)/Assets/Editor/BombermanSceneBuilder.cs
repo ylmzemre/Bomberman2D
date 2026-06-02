@@ -197,8 +197,25 @@ public class BombermanSceneBuilder
         player.transform.localScale = Vector3.one; 
         
         SpriteRenderer sr = player.AddComponent<SpriteRenderer>();
-        sr.sprite = LoadSprite("Assets/Sprites/Player.png");
-        sr.sortingOrder = 10;
+        
+        Sprite[] playerSprites = LoadAllSprites("Assets/Sprites/PlayerSheet.png");
+        if (playerSprites.Length > 0)
+        {
+            sr.sprite = playerSprites[0];
+            
+            Mechanics.SpriteAnimator anim = player.AddComponent<Mechanics.SpriteAnimator>();
+            int cols = playerSprites.Length / 4;
+            anim.downSprites = GetSpriteRange(playerSprites, 0, cols);
+            anim.upSprites = GetSpriteRange(playerSprites, cols, cols);
+            anim.leftSprites = GetSpriteRange(playerSprites, cols * 2, cols);
+            anim.rightSprites = GetSpriteRange(playerSprites, cols * 3, cols);
+        }
+        else
+        {
+            sr.sprite = LoadSprite("Assets/Sprites/Player.png");
+        }
+        
+        sr.sortingOrder = 3;
 
         Rigidbody2D rb = player.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0;
@@ -223,8 +240,24 @@ public class BombermanSceneBuilder
         enemy.transform.localScale = Vector3.one; 
 
         SpriteRenderer sr = enemy.AddComponent<SpriteRenderer>();
-        sr.sprite = LoadSprite("Assets/Sprites/Enemy.png");
-        sr.sortingOrder = 9;
+
+        Sprite[] enemySprites = LoadAllSprites("Assets/Sprites/EnemySheet.png");
+        if (enemySprites.Length >= 12)
+        {
+            sr.sprite = enemySprites[0];
+            
+            Mechanics.SpriteAnimator anim = enemy.AddComponent<Mechanics.SpriteAnimator>();
+            anim.downSprites = new Sprite[] { enemySprites[0], enemySprites[1], enemySprites[2], enemySprites[8] };
+            anim.rightSprites = new Sprite[] { enemySprites[3], enemySprites[4], enemySprites[9], enemySprites[10], enemySprites[11] };
+            anim.upSprites = new Sprite[] { enemySprites[6], enemySprites[7] };
+            anim.useFlipForLeft = true;
+        }
+        else
+        {
+            sr.sprite = LoadSprite("Assets/Sprites/Enemy.png");
+        }
+
+        sr.sortingOrder = 3;
 
         Rigidbody2D rb = enemy.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0;

@@ -14,10 +14,12 @@ namespace Bomberman2D.Enemy
         private Vector2 moveDirection;
         private bool isMovingToCenter = false;
         private Vector2 targetCenter;
+        private Mechanics.SpriteAnimator animator;
 
         private void Start()
         {
             rb = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Mechanics.SpriteAnimator>();
             rb.gravityScale = 0f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             
@@ -59,6 +61,11 @@ namespace Bomberman2D.Enemy
                     targetCenter = new Vector2(Mathf.Round(rb.position.x), Mathf.Round(rb.position.y));
                     isMovingToCenter = true;
                 }
+            }
+
+            if (animator != null)
+            {
+                animator.SetDirection(moveDirection);
             }
         }
 
