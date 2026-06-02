@@ -53,6 +53,7 @@ namespace Bomberman2D.Player
                     {
                         bombComponent.Initialize(this, explosionRange);
                     }
+                    if (AudioManager.Instance != null) AudioManager.Instance.PlayDropBomb();
                 }
             }
         }

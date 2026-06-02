@@ -46,6 +46,8 @@ namespace Bomberman2D.Mechanics
 
             // Center explosion
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayExplosion();
 
             // Explosions in 4 directions
             StartCoroutine(CreateExplosions(Vector2.up));

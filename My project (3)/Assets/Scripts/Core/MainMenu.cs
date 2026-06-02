@@ -22,6 +22,8 @@ namespace Bomberman2D.UI
 
         public void PlayGame()
         {
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayClick();
+            
             // Ana menüyü gizle, oyun UI'ını aç
             gameObject.SetActive(false);
             if (topPanel != null) topPanel.SetActive(true);

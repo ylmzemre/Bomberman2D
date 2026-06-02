@@ -52,6 +52,17 @@ public class BombermanSceneBuilder
         // 3. Ortak Sistemler
         GameObject gmObj = new GameObject("GameManager");
         gmObj.AddComponent<GameManager>();
+        
+        // AudioManager Kurulumu
+        AudioManager am = gmObj.AddComponent<AudioManager>();
+        am.sfxSource = gmObj.AddComponent<AudioSource>();
+        am.musicSource = gmObj.AddComponent<AudioSource>();
+        
+        AssetDatabase.Refresh(); // Python'un ürettiği ses dosyalarının import olmasını sağla
+        am.explosionClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/explosion.wav");
+        am.dropBombClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/drop_bomb.wav");
+        am.clickClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/click.wav");
+        am.deathClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/death.wav");
 
         Camera mainCam = Camera.main;
         if (mainCam != null)
