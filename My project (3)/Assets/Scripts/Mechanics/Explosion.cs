@@ -4,13 +4,41 @@ namespace Bomberman2D.Mechanics
 {
     public class Explosion : MonoBehaviour
     {
-        [Header("Explosion Settings")]
-        public float duration = 0.5f;
+        public Sprite[] frames;
+        public float frameRate = 0.05f;
+
+        private SpriteRenderer sr;
+        private float timer;
+        private int currentFrame;
 
         private void Start()
         {
-            // Automatically destroy the explosion visual/hitbox after a short time
-            Destroy(gameObject, duration);
+            sr = GetComponent<SpriteRenderer>();
+            
+            if (frames == null || frames.Length == 0)
+            {
+                Destroy(gameObject, 0.5f); // Fallback destroy if no frames
+            }
+        }
+
+        private void Update()
+        {
+            if (frames == null || frames.Length == 0) return;
+
+            timer += Time.deltaTime;
+            if (timer >= frameRate)
+            {
+                timer -= frameRate;
+                currentFrame++;
+                if (currentFrame < frames.Length)
+                {
+                    sr.sprite = frames[currentFrame];
+                }
+                else
+                {
+                    Destroy(gameObject); // Animasyon bitince yok ol
+                }
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)

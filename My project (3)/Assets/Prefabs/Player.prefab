@@ -119,15 +119,15 @@ MonoBehaviour:
   - {fileID: 1460284702, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
   - {fileID: -1949929391, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
   leftSprites:
-  - {fileID: -2060628198, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
-  - {fileID: -1046861715, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
-  - {fileID: 1397434572, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
-  - {fileID: 888288541, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
-  rightSprites:
   - {fileID: -643956852, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
   - {fileID: 702493487, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
   - {fileID: 184816831, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
   - {fileID: 1044582393, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
+  rightSprites:
+  - {fileID: -2060628198, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
+  - {fileID: -1046861715, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
+  - {fileID: 1397434572, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
+  - {fileID: 888288541, guid: 74ee76334dd00884b81363391a37e98b, type: 3}
   useFlipForLeft: 0
   frameRate: 0.15
 --- !u!50 &645519807925362648

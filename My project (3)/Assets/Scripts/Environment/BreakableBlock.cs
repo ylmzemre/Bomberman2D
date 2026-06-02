@@ -4,22 +4,27 @@ namespace Bomberman2D.Environment
 {
     public class BreakableBlock : MonoBehaviour
     {
-        [Header("Drop Settings")]
-        [Range(0f, 1f)]
-        public float powerUpDropChance = 0.3f;
-        public GameObject[] powerUpPrefabs;
+        public GameObject[] powerupPrefabs;
 
         public void OnExploded()
         {
-            // Try to drop a power-up
-            if (Random.value <= powerUpDropChance && powerUpPrefabs.Length > 0)
+            // %30 şansla güçlendirme düşür
+            if (powerupPrefabs != null && powerupPrefabs.Length > 0 && Random.value < 0.3f)
             {
-                int randomIndex = Random.Range(0, powerUpPrefabs.Length);
-                Instantiate(powerUpPrefabs[randomIndex], transform.position, Quaternion.identity);
+                int index = Random.Range(0, powerupPrefabs.Length);
+                Instantiate(powerupPrefabs[index], transform.position, Quaternion.identity);
             }
 
-            // Destroy the block
             Destroy(gameObject);
+        }
+        
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            // Fallback: Kutuyu sadece patlama kırabilir
+            if (collision.CompareTag("Explosion"))
+            {
+                OnExploded();
+            }
         }
     }
 }

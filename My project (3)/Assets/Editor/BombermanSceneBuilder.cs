@@ -79,7 +79,8 @@ public class BombermanSceneBuilder
         GameObject bombPrefab = CreateBombPrefab(explosionPrefab);
         GameObject playerPrefab = CreatePlayerPrefab(bombPrefab);
         GameObject enemyPrefab = CreateEnemyPrefab();
-        GameObject boxPrefab = CreateBoxPrefab();
+        GameObject[] powerUpPrefabs = CreatePowerUpPrefabs();
+        GameObject boxPrefab = CreateBoxPrefab(powerUpPrefabs);
 
         // 5. Tilemap ile Kırılamaz Duvarları Çiz (Grid -> Tilemap)
         GameObject gridObj = new GameObject("Grid");
@@ -161,11 +162,20 @@ public class BombermanSceneBuilder
         expObj.tag = "Explosion";
         BoxCollider2D expCol = expObj.AddComponent<BoxCollider2D>();
         expCol.isTrigger = true;
-        // Kutu çarpışmasını algılayabilmesi için Explosion'a Kinematic Rigidbody ekliyoruz
         Rigidbody2D expRb = expObj.AddComponent<Rigidbody2D>();
         expRb.bodyType = RigidbodyType2D.Kinematic;
         
-        expObj.AddComponent<Explosion>();
+        Explosion expComp = expObj.AddComponent<Explosion>();
+        
+        Sprite[] explosionSprites = LoadAllSprites("Assets/Sprites/ExplosionSheet.png");
+        if (explosionSprites.Length > 0)
+        {
+            expComp.frames = explosionSprites;
+            SpriteRenderer expSr = expObj.AddComponent<SpriteRenderer>();
+            expSr.sprite = explosionSprites[0];
+            expSr.sortingOrder = 4;
+        }
+
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(expObj, path);
         Object.DestroyImmediate(expObj);
         return prefab;
@@ -276,7 +286,31 @@ public class BombermanSceneBuilder
         return prefab;
     }
 
-    private static GameObject CreateBoxPrefab()
+    private static GameObject[] CreatePowerUpPrefabs()
+    {
+        string[] types = { "Bomb", "Fire", "Skate" };
+        GameObject[] prefabs = new GameObject[3];
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject pObj = new GameObject("PowerUp_" + types[i]);
+            pObj.tag = "Breakable"; // Patlama bunu yok edebilsin diye
+            SpriteRenderer sr = pObj.AddComponent<SpriteRenderer>();
+            sr.sprite = LoadSprite("Assets/Sprites/Powerup_" + types[i] + ".png");
+            sr.sortingOrder = 1;
+            CircleCollider2D col = pObj.AddComponent<CircleCollider2D>();
+            col.isTrigger = true;
+            col.radius = 0.4f;
+            
+            Mechanics.PowerUp pu = pObj.AddComponent<Mechanics.PowerUp>();
+            pu.type = (Mechanics.PowerUpType)i;
+            
+            prefabs[i] = PrefabUtility.SaveAsPrefabAsset(pObj, "Assets/Prefabs/PowerUp_" + types[i] + ".prefab");
+            Object.DestroyImmediate(pObj);
+        }
+        return prefabs;
+    }
+
+    private static GameObject CreateBoxPrefab(GameObject[] powerUps)
     {
         string path = "Assets/Prefabs/Box.prefab";
         GameObject box = new GameObject("Box");
@@ -289,7 +323,8 @@ public class BombermanSceneBuilder
 
         box.AddComponent<PolygonCollider2D>();
         
-        box.AddComponent<BreakableBlock>();
+        BreakableBlock bb = box.AddComponent<BreakableBlock>();
+        bb.powerupPrefabs = powerUps;
 
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(box, path);
         Object.DestroyImmediate(box);
@@ -351,12 +386,24 @@ public class BombermanSceneBuilder
         GameObject mainMenuObj = new GameObject("MainMenuPanel");
         mainMenuObj.transform.SetParent(canvasObj.transform, false);
         Image mainImg = mainMenuObj.AddComponent<Image>();
-        mainImg.color = new Color(0.1f, 0.1f, 0.2f, 1f); // Koyu arka plan
+        mainImg.sprite = LoadSprite("Assets/Sprites/UI/MainMenuBG.png");
+        mainImg.color = Color.white;
         RectTransform mainRect = mainMenuObj.GetComponent<RectTransform>();
         mainRect.anchorMin = Vector2.zero;
         mainRect.anchorMax = Vector2.one;
         mainRect.offsetMin = Vector2.zero;
         mainRect.offsetMax = Vector2.zero;
+
+        // Title Text
+        TextMeshProUGUI titleTxt = CreateText("TitleText", mainMenuObj.transform, new Vector2(0, 0), "BOMBERMAN 2D");
+        titleTxt.fontSize = 72;
+        titleTxt.alignment = TextAlignmentOptions.Center;
+        RectTransform titleRect = titleTxt.GetComponent<RectTransform>();
+        titleRect.anchorMin = new Vector2(0.5f, 0.7f);
+        titleRect.anchorMax = new Vector2(0.5f, 0.7f);
+        titleRect.pivot = new Vector2(0.5f, 0.5f);
+        titleRect.anchoredPosition = Vector2.zero;
+        titleRect.sizeDelta = new Vector2(800, 100);
 
         // Oyunun başında TopPanel kapalı, MainMenu açık olacak
         panelObj.SetActive(false); 
@@ -372,8 +419,20 @@ public class BombermanSceneBuilder
         btnImg.sprite = LoadSprite("Assets/Sprites/UI/Button.png");
         Button playBtn = playBtnObj.AddComponent<Button>();
         RectTransform btnRect = playBtnObj.GetComponent<RectTransform>();
+        btnRect.anchorMin = new Vector2(0.5f, 0.3f);
+        btnRect.anchorMax = new Vector2(0.5f, 0.3f);
+        btnRect.pivot = new Vector2(0.5f, 0.5f);
         btnRect.sizeDelta = new Vector2(300, 100);
         btnRect.anchoredPosition = new Vector2(0, 0);
+        
+        TextMeshProUGUI playTxt = CreateText("PlayText", playBtnObj.transform, new Vector2(0,0), "PLAY GAME");
+        playTxt.alignment = TextAlignmentOptions.Center;
+        playTxt.color = Color.black;
+        RectTransform ptRect = playTxt.GetComponent<RectTransform>();
+        ptRect.anchorMin = Vector2.zero;
+        ptRect.anchorMax = Vector2.one;
+        ptRect.offsetMin = Vector2.zero;
+        ptRect.offsetMax = Vector2.zero;
         
         // Butonu scripte bağla
         menuScript.playButton = playBtn;
