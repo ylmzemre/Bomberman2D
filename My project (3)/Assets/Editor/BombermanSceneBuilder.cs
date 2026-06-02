@@ -203,7 +203,7 @@ public class BombermanSceneBuilder
         {
             sr.sprite = playerSprites[0];
             
-            Mechanics.SpriteAnimator anim = player.AddComponent<Mechanics.SpriteAnimator>();
+            SpriteAnimator anim = player.AddComponent<SpriteAnimator>();
             int cols = playerSprites.Length / 4;
             anim.downSprites = GetSpriteRange(playerSprites, 0, cols);
             anim.upSprites = GetSpriteRange(playerSprites, cols, cols);
@@ -246,7 +246,7 @@ public class BombermanSceneBuilder
         {
             sr.sprite = enemySprites[0];
             
-            Mechanics.SpriteAnimator anim = enemy.AddComponent<Mechanics.SpriteAnimator>();
+            SpriteAnimator anim = enemy.AddComponent<SpriteAnimator>();
             anim.downSprites = new Sprite[] { enemySprites[0], enemySprites[1], enemySprites[2], enemySprites[8] };
             anim.rightSprites = new Sprite[] { enemySprites[3], enemySprites[4], enemySprites[9], enemySprites[10], enemySprites[11] };
             anim.upSprites = new Sprite[] { enemySprites[6], enemySprites[7] };
