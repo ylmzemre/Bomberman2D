@@ -301,8 +301,8 @@ public class BombermanSceneBuilder
             col.isTrigger = true;
             col.radius = 0.4f;
             
-            Mechanics.PowerUp pu = pObj.AddComponent<Mechanics.PowerUp>();
-            pu.type = (Mechanics.PowerUpType)i;
+            PowerUp pu = pObj.AddComponent<PowerUp>();
+            pu.type = (PowerUpType)i;
             
             prefabs[i] = PrefabUtility.SaveAsPrefabAsset(pObj, "Assets/Prefabs/PowerUp_" + types[i] + ".prefab");
             Object.DestroyImmediate(pObj);
