@@ -53,10 +53,11 @@ public class BombermanSceneBuilder
         GameObject gmObj = new GameObject("GameManager");
         gmObj.AddComponent<GameManager>();
         
-        // AudioManager Kurulumu
-        AudioManager am = gmObj.AddComponent<AudioManager>();
-        am.sfxSource = gmObj.AddComponent<AudioSource>();
-        am.musicSource = gmObj.AddComponent<AudioSource>();
+        // AudioManager Kurulumu (Kendi objesi olmalı ki DontDestroyOnLoad GameManager'ı da ölümsüz yapmasın)
+        GameObject amObj = new GameObject("AudioManager");
+        AudioManager am = amObj.AddComponent<AudioManager>();
+        am.sfxSource = amObj.AddComponent<AudioSource>();
+        am.musicSource = amObj.AddComponent<AudioSource>();
         
         AssetDatabase.Refresh(); // Python'un ürettiği ses dosyalarının import olmasını sağla
         am.explosionClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/explosion.wav");
