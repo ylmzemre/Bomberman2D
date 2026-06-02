@@ -294,6 +294,7 @@ public class BombermanSceneBuilder
         {
             GameObject pObj = new GameObject("PowerUp_" + types[i]);
             pObj.tag = "Breakable"; // Patlama bunu yok edebilsin diye
+            pObj.transform.localScale = new Vector3(0.5f, 0.5f, 1f); // Boyut küçültme
             SpriteRenderer sr = pObj.AddComponent<SpriteRenderer>();
             sr.sprite = LoadSprite("Assets/Sprites/Powerup_" + types[i] + ".png");
             sr.sortingOrder = 1;
@@ -424,15 +425,6 @@ public class BombermanSceneBuilder
         btnRect.pivot = new Vector2(0.5f, 0.5f);
         btnRect.sizeDelta = new Vector2(300, 100);
         btnRect.anchoredPosition = new Vector2(0, 0);
-        
-        TextMeshProUGUI playTxt = CreateText("PlayText", playBtnObj.transform, new Vector2(0,0), "PLAY GAME");
-        playTxt.alignment = TextAlignmentOptions.Center;
-        playTxt.color = Color.black;
-        RectTransform ptRect = playTxt.GetComponent<RectTransform>();
-        ptRect.anchorMin = Vector2.zero;
-        ptRect.anchorMax = Vector2.one;
-        ptRect.offsetMin = Vector2.zero;
-        ptRect.offsetMax = Vector2.zero;
         
         // Butonu scripte bağla
         menuScript.playButton = playBtn;

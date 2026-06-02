@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &9036361820634882071
+--- !u!1 &3204476992670897371
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,24 +8,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2774514809113839580}
-  - component: {fileID: 1492143161266436693}
-  - component: {fileID: 1981042322913836697}
-  - component: {fileID: 4302072701203013541}
+  - component: {fileID: 2840614715152436955}
+  - component: {fileID: 7551980601580781270}
+  - component: {fileID: 3129749959028852449}
+  - component: {fileID: 8633806794999663595}
   m_Layer: 0
-  m_Name: Box
+  m_Name: PowerUp_Fire
   m_TagString: Breakable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2774514809113839580
+--- !u!4 &2840614715152436955
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9036361820634882071}
+  m_GameObject: {fileID: 3204476992670897371}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -34,14 +34,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1492143161266436693
+--- !u!212 &7551980601580781270
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9036361820634882071}
+  m_GameObject: {fileID: 3204476992670897371}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -81,25 +81,25 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 2937cd5ac6b481345887531fd7329af6, type: 3}
+  m_Sprite: {fileID: -1671819616181008120, guid: 097a312eb1035234ba7cc897665805b1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 0.9936629}
+  m_Size: {x: 5.99, y: 7.42}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!60 &1981042322913836697
-PolygonCollider2D:
+--- !u!58 &3129749959028852449
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9036361820634882071}
+  m_GameObject: {fileID: 3204476992670897371}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -123,47 +123,22 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 0.9936629}
-    newSize: {x: 1, y: 0.9936629}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0.49239543, y: 0.49429658}
-      - {x: 0.47465146, y: 0.49683142}
-      - {x: -0.4721166, y: 0.49683142}
-      - {x: -0.5, y: 0.47401774}
-      - {x: -0.5, y: -0.47528517}
-      - {x: -0.49873257, y: -0.47782}
-      - {x: -0.48479086, y: -0.4917617}
-      - {x: -0.4721166, y: -0.49683142}
-      - {x: 0.48352346, y: -0.49683142}
-      - {x: 0.5, y: -0.47148287}
-      - {x: 0.5, y: 0.46894804}
-  m_UseDelaunayMesh: 1
---- !u!114 &4302072701203013541
+  m_Radius: 0.4
+--- !u!114 &8633806794999663595
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9036361820634882071}
+  m_GameObject: {fileID: 3204476992670897371}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 594a779e984751f4da1d609b2a11c65b, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b41bb98035d79b4b8bbf49dd0507169, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bomberman2D.Environment.BreakableBlock
-  powerupPrefabs:
-  - {fileID: 5168384405023333748, guid: f8bf8edad3a94ff40b137f8e2deccf19, type: 3}
-  - {fileID: 3204476992670897371, guid: 75d938e6f10fe424b82a4402825431be, type: 3}
-  - {fileID: 1165209166955706682, guid: 19d825ae4af9e5a439de30e31173fbe7, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::Bomberman2D.Mechanics.PowerUp
+  type: 1
