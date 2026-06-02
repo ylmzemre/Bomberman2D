@@ -221,7 +221,9 @@ public class BombermanSceneBuilder
         rb.gravityScale = 0;
         rb.freezeRotation = true;
 
-        player.AddComponent<PolygonCollider2D>();
+        CircleCollider2D col = player.AddComponent<CircleCollider2D>();
+        col.radius = 0.4f;
+        col.offset = new Vector2(0, -0.1f);
 
         player.AddComponent<PlayerController>();
         BombSpawner spawner = player.AddComponent<BombSpawner>();
@@ -263,7 +265,9 @@ public class BombermanSceneBuilder
         rb.gravityScale = 0;
         rb.freezeRotation = true;
 
-        enemy.AddComponent<PolygonCollider2D>();
+        CircleCollider2D col = enemy.AddComponent<CircleCollider2D>();
+        col.radius = 0.4f;
+        col.offset = new Vector2(0, -0.1f);
 
         enemy.AddComponent<EnemyAI>();
 
